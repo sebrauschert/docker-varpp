@@ -11,6 +11,14 @@ To install the image it needs to be pulled from ~DockerHub~ in the following man
 docker pull greenlantern/varpp-predict-utils
 #+END_SRC
 * Run the model
+** Necessary data
+Please note that this image is only one of several components necessary to run the model. The image is enough to create a custom ~VARPP-Rule~ model, but requires extra data to predict with it.
+The docker image is part of a ~DataLad~ setup, that requires:
+
+- positional data files for genetic variants across all genes available in the GTEx and HCL data sets
+- In case of prediction with pre-computed models, the ~VARPP-Rule~ results files for all HPO terms tested in the associated publication
+- The container to prepare the patient variant file, in case it is annotated with ~hg19~ instead of ~hg38~ reference genome information.
+
 To get help on how to create a custom ~VARPP-RuleFit~ model to be used for prediction of pathogenic variants of a patient, run the following:
 
 #+BEGIN_SRC 
