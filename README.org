@@ -1,0 +1,53 @@
+#+TITLE:Docker image for VARPP-RuleFit 
+#+AUTHOR: Sebastian Rauschert, PhD
+#+email: Sebastian.Rauschert@telethonkids.org.au
+* Overview
+This repository contains the necessary scripts to build a docker container for executing ~VARPP-RuleFit~ and to predict with the same model on a patient ~.vcf~ file.
+* Install
+Docker needs to be installed on the machine you are pulling the image to.
+To install the image it needs to be pulled from ~DockerHub~ in the following manner
+
+#+BEGIN_SRC bash :eval never
+docker pull greenlantern/varpp-predict-utils
+#+END_SRC
+* Run the model
+To get help on how to create a custom ~VARPP-RuleFit~ model to be used for prediction of pathogenic variants of a patient, run the following:
+
+#+BEGIN_SRC 
+docker run greenlantern/varpp-predict-utils varppRule.R --help
+Usage: /root/varpp-prediction/varppRule.R [options]
+
+ VARPP-RuleFit.
+
+Options:
+	-g CHARACTER, --gene_list=CHARACTER
+		A list of potentially pathogenic genes associated with the patient.
+
+	-t CHARACTER, --type=CHARACTER
+		Run VARPP-RuleFit with either 'hcl', 'gtex' or 'custom' data
+
+	-p CHARACTER, --user_pathogenic=CHARACTER
+		A file with custom pathogenic data in the same format as the HCL or GTEx data.
+
+	-b CHARACTER, --user_benign=CHARACTER
+		A file with custom benign data in the same format as the HCL or GTEx data.
+
+	-o CHARACTER, --output_path=CHARACTER
+		Specify the path to the results. Defaults to the 'results' in the current directory.
+
+	-c CHARACTER, --cores=CHARACTER
+		Maximum number of cores available. This will be distributed across the model
+
+	-n CHARACTER, --ntree=CHARACTER
+		Number of trees in the model, defaults to 2000.
+
+	-h, --help
+		Show this help message and exit
+
+Example:
+
+  ./varppRule.R -g <gene list> -t <type: GTEx, HCL, custom> -p <User provided pathogenic data> -b <User provided benign data> -o <output/path> -c <Maximum number of cores available> -n <Number of trees, defaults to 2000>
+
+#+END_SRC
+
+This indicates all the options required for running the program.
