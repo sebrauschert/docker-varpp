@@ -17,7 +17,7 @@ option_list = list(
   make_option(c("-g", "--gene_list"),
               type="character",
               default=NULL,
-              help="A list of potentially pathogenic genes associated with the patient.",
+              help="A comma seperated list of potentially pathogenic genes associated with the patient.(e.g. ABC,DEF,GHI)",
               metavar="character"),
   make_option(c("-t", "--type"),
               type="character",
@@ -52,12 +52,12 @@ option_list = list(
   make_option(c("-l", "--lasso"),
               type="character",
               default=100,
-              help="Number of LASSO bootstrap rounds.",
+              help="Number of LASSO bootstrap rounds. Defaults to 100.",
               metavar="character"),
   make_option(c("-m", "--max_depth"),
               type="character",
               default=3,
-              help="Number of LASSO bootstrap rounds.",
+              help="Maximum tree depth; defaults to 3..",
               metavar="character")
 );
 
@@ -79,7 +79,7 @@ output_path <- opt$output_path
 cores       <- as.numeric(opt$cores)
 ntree       <- as.numeric(opt$ntree)
 patient_vcf <- opt$patient_vcf
-scratch     <- '/mnt/scratch'
+scratch     <- '/mnt/scratch/'
 max.depth   <- as.numeric(opt$max_depth)
 lasso       <- as.numeric(opt$lasso)
 
@@ -99,7 +99,7 @@ model <- rule_fit(HPO_genes = genes,
 
 # Save the results
 saveRDS(model, paste0(scratch, "/VARPP-RuleFit_results.rds"))
-varpp_report(model, paste0(scratch,"VARPP_model"))
+varpp_report(model, paste0(scratch,"/VARPP_model"))
 #=============================================================================================================================
 
 patient_file_path  <- paste0('/mnt/', patient_vcf)
@@ -205,7 +205,7 @@ predict.varppRule <- function(patient_data,
 #================================================================================================================================
 
 # Read the patient vcf file
-patient_variants <- read.vcfR(patient_vcf)
+patient_variants <- read.vcfR(paste0('mnt/',patient_vcf))
 
 # Bring the file into the right format (bedfile) and make sure the 'chr' is appended to the chromosome (vcf files not including this?)
 as_tibble(getFIX(patient_variants)) %>%
@@ -215,7 +215,7 @@ as_tibble(getFIX(patient_variants)) %>%
   select(CHROM, Start,End) -> dat
 
 # Save the vcf so we can use bedtools
-write_delim(dat, paste0(scratch,"patient.bed"), delim="\t", col_names=F)
+write_delim(dat, paste0(scratch,"/patient.bed"), delim="\t", col_names=F)
 
 #================================================================================================================================
 ## # Run bedtools sort and merge the patient variants with the data necessary for the prediction: GTEx or HCL
@@ -243,7 +243,6 @@ system(paste0("rm ", scratch, "*.bed_complete ", scratch, "patient.bed ", scratc
 #================================================================================================================================
 # Predict
 
-  
 
 PREDICTIONS <- predict.varppRule(predict,
                                  model,  
@@ -256,12 +255,3 @@ head(PREDICTIONS)
 
 # Write the results
 write_csv(PREDICTIONS, paste0(scratch,"predictions.csv"))
-
-
-
-
-
-
-
-
-

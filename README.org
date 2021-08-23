@@ -20,7 +20,7 @@ The docker image is part of a ~DataLad~ setup, that requires:
 - The container to prepare the patient variant file, in case it is annotated with ~hg19~ instead of ~hg38~ reference genome information.
 
 To get help on how to create a custom ~VARPP-RuleFit~ model to be used for prediction of pathogenic variants of a patient, run the following:
-
+** Execute the model
 #+BEGIN_SRC 
 docker run greenlantern/varpp-predict-utils varppRule.R --help
 Usage: /root/varpp-prediction/varppRule.R [options]
@@ -59,3 +59,92 @@ Example:
 #+END_SRC
 
 This indicates all the options required for running the program.
+* Predict with the model
+In order to predict with the model we created in the `Run the model` step, use the ~predict.R~ function of the container:
+
+#+BEGIN_SRC 
+docker run greenlantern/varpp-predict-utils predict.R --help
+varpp prediction script.
+
+Options:
+	-v CHARACTER, --patient_vcf=CHARACTER
+		A patient derived .vcf file.
+
+	-d CHARACTER, --data=CHARACTER
+		Model data to predict with. Either GTEx or HCL.
+
+	-p CHARACTER, --hpo=CHARACTER
+		HPO term ID to predict with. This needs to be in the list of HPO terms that were pre-modelled.
+
+	-c CHARACTER, --custom_model=CHARACTER
+		Path to a pre-trained VARPP-RuleFit model in the form of a .rds object If this option is chosen,-p/--hpo option will be ignored.
+
+	-o CHARACTER, --output_path=CHARACTER
+		Specify the path to the results. Defaults to the 'results' in the current directory.
+
+	-h, --help
+		Show this help message and exit
+
+Example:
+
+  ./predict.R -v <patient.vcf> -d <data: GTEx or HCL> -p <HPO term ID> -o <output/path> 
+
+#+END_SRC
+* Perform both: Create model and predict
+The most complete way of running the ~VARPP-RuleFit~ model is to use the ~varppRuleAndPredict.R~ function:
+#+BEGIN_SRC 
+docker run greenlantern/varpp-predict-utils varppRuleAndPredict.R --help
+
+Usage: /root/varpp-prediction/varppRuleAndPredict.R [options]
+
+ VARPP-RuleFit.
+
+Options:
+	-v CHARACTER, --patient_vcf=CHARACTER
+		A patient derived .vcf file.
+
+	-g CHARACTER, --gene_list=CHARACTER
+		A list of potentially pathogenic genes associated with the patient.
+
+	-t CHARACTER, --type=CHARACTER
+		Run VARPP-RuleFit with either 'hcl', 'gtex' or 'custom' data
+
+	-p CHARACTER, --user_pathogenic=CHARACTER
+		A file with custom pathogenic data in the same format as the HCL or GTEx data.
+
+	-b CHARACTER, --user_benign=CHARACTER
+		A file with custom benign data in the same format as the HCL or GTEx data.
+
+	-o CHARACTER, --output_path=CHARACTER
+		Specify the path to the results. Defaults to the 'results' in the current directory.
+
+	-c CHARACTER, --cores=CHARACTER
+		Maximum number of cores available. This will be distributed across the model
+
+	-n CHARACTER, --ntree=CHARACTER
+		Number of trees in the model, defaults to 2000.
+
+	-l CHARACTER, --lasso=CHARACTER
+		Number of LASSO bootstrap rounds.
+
+	-m CHARACTER, --max_depth=CHARACTER
+		Maximum tree depth, defaults to 3.
+
+	-h, --help
+		Show this help message and exit
+
+Example:
+
+  ./varppRuleAndPredict.R -v <path to patient vcf file> -g <gene list> -t <type: GTEx, HCL, custom> -p <User provided pathogenic data> -b <User provided benign data> -o <output/path> -c <Maximum number of cores available> -n <Number of trees, defaults to 2000> -l <Number of LASSO bootstrap rounds> -m <Tree depth>
+#+END_SRC
+* Example
+
+#+BEGIN_SRC bash
+docker run -v $(pwd):/mnt greenlantern/varpp-predict-utils:latest varppRuleAndPredict.R \
+               -v $(pwd)/patientVcf/patient.vcf \
+               -g ACTC1,CITED2,CLIC2,CRELD1,CYTB,DMPK,GATA4,GATA6,LMNA,MYH6 \
+               -t gtex \
+               -c 64 \
+               -l 100 \
+               -m 3
+#+END_SRC

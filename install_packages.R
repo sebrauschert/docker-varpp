@@ -21,5 +21,5 @@ install.packages(c('devtools',
                    ), repos = 'http://cran.rstudio.com/')
 
 # Install packages for VARPP app
-devtools::install_github("Hobbeist/varppRule@v1.0")
+devtools::install_github("TelethonKids/varppRule")
 
