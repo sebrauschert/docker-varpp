@@ -138,13 +138,43 @@ Example:
   ./varppRuleAndPredict.R -v <path to patient vcf file> -g <gene list> -t <type: GTEx, HCL, custom> -p <User provided pathogenic data> -b <User provided benign data> -o <output/path> -c <Maximum number of cores available> -n <Number of trees, defaults to 2000> -l <Number of LASSO bootstrap rounds> -m <Tree depth>
 #+END_SRC
 * Example
-
-#+BEGIN_SRC bash
+** Code: This takes in the gene list for HP:0001948 (Alkalosis) 
+#+BEGIN_SRC bash :eval never
 docker run -v $(pwd):/mnt greenlantern/varpp-predict-utils:latest varppRuleAndPredict.R \
-               -v $(pwd)/patientVcf/patient.vcf \
-               -g ACTC1,CITED2,CLIC2,CRELD1,CYTB,DMPK,GATA4,GATA6,LMNA,MYH6 \
+               -v patientVcf/patient.vcf \
+               -g ASL,CLCNKB,KCNJ10,SLC12A3,SCNN1B,SCNN1G,HSD11B2,AIP,CLCNKA,BSND,SLC12A1,KCNJ1,SARS2,OTC,NR3C1,CACNA1D,ASS1,CA5A,SLC26A3,SLC25A15,USP8,NARS2,IKZF1,CYP17A1,KCNJ5,HLA-B,SCNN1A,CPS1,NOS1,REN \
                -t gtex \
                -c 64 \
                -l 100 \
                -m 3
 #+END_SRC
+** Results
+The console will show an output similar to the following:
+#+BEGIN_SRC 
+Predictions are:
+   Chr   Start     End    Gene CADD_raw_rankscore Prediction
+1 chr1  941187  941188  SAMD11             22.200  0.9999974
+2 chr1  955212  955213   NOC2L              0.267  0.9999916
+3 chr1  968669  968670 PLEKHN1              1.024  0.9999995
+4 chr1 1006171 1006172   ISG15              3.296  0.9999857
+5 chr1 1023443 1023444    AGRN              1.481  0.9999972
+6 chr1 1024497 1024498    AGRN              1.584  0.9999973
+
+#+END_SRC
+
+and the results are stored in ~scratch~ in the current working directory as:
+
+#+BEGIN_SRC 
+predictions.csv
+VARPP-RuleFit_results.rds
+#+END_SRC
+
+
+
+
+
+
+
+
+
+

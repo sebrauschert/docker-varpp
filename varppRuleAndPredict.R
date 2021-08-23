@@ -99,7 +99,7 @@ model <- rule_fit(HPO_genes = genes,
 
 # Save the results
 saveRDS(model, paste0(scratch, "/VARPP-RuleFit_results.rds"))
-varpp_report(model, paste0(scratch,"/VARPP_model"))
+#varpp_report(model, paste0(scratch,"/VARPP_model"))
 #=============================================================================================================================
 
 patient_file_path  <- paste0('/mnt/', patient_vcf)
